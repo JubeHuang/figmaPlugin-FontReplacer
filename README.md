@@ -13,7 +13,7 @@
 
 ## 截圖
 
-![Font Replacer UI](https://github.com/user-attachments/assets/FontReplacerUI.png)
+![Font Replacer UI](https://github.com/JubeHuang/figmaPlugin-FontReplacer/blob/main/src/assets/FontReplacerUI.png)
 
 ## 安裝與開發
 

@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root {
+    --bg: #fff;
+    --surface: #f4f5f7;
+    --border: #d0d4db;
+    --text: #111827;
+    --text2: #4b5563;
+    --label: #374151;
+    --accent: #0062FF;
+    --warn-bg: #fffbeb;
+    --warn-border: #c08000;
+    --warn-text: #5c3d00;
+    --ok: #15803d;
+    --err: #b91c1c;
+    --r: 5px;
+    --rm: 8px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 13px; color: var(--text); background: var(--bg); }
+
+  .header { background: var(--accent); color: #fff; padding: 10px 14px; font-weight: 600; font-size: 14px; }
+  .body { padding: 14px; display: flex; flex-direction: column; gap: 14px; }
+
+  .lbl { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--label); margin-bottom: 7px; }
+
+  /* scope buttons */
+  .scope-row { display: flex; gap: 6px; }
+  .scope-btn {
+    flex: 1; padding: 7px 0; font-size: 12px; font-weight: 500;
+    border: 1.5px solid var(--border); border-radius: 6px;
+    cursor: pointer; background: #fff; color: var(--text2); font-family: inherit;
+    transition: background .12s, color .12s, border-color .12s;
+  }
+  .scope-btn:hover:not(.on) { border-color: #9ab3d6; color: var(--text); }
+  .scope-btn.on { background: var(--accent); color: #fff; font-weight: 600; border-color: var(--accent); }
+
+  /* pair cards */
+  .pairs { display: flex; flex-direction: column; gap: 8px; }
+  .card {
+    background: var(--surface); border-radius: var(--rm);
+    padding: 10px; border: 1px solid var(--border);
+    animation: slideIn .15s ease-out;
+  }
+  @keyframes slideIn { from { opacity:0; transform:translateY(-5px); } to { opacity:1; transform:translateY(0); } }
+  .card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 7px; }
+  .card-num { font-size: 11px; color: var(--label); font-weight: 700; }
+  .card-del { font-size: 17px; color: #9ca3af; cursor: pointer; background: none; border: none; padding: 0 2px; line-height: 1; font-family: inherit; }
+  .card-del:hover { color: #ef4444; }
+  .card-row { display: grid; grid-template-columns: 1fr 18px 1fr; align-items: center; gap: 5px; }
+  .card-row select, .card-row input {
+    font-size: 12px; padding: 6px 7px; border-radius: var(--r);
+    border: 1px solid var(--border); background: #fff;
+    color: var(--text); font-family: inherit; width: 100%;
+  }
+  .card-row select:focus, .card-row input:focus { outline: none; border-color: var(--accent); }
+  .arrow { text-align: center; color: var(--text2); font-size: 13px; }
+  .style-row { margin-top: 6px; }
+  .style-row select { font-size: 11px; padding: 3px 5px; width: 100%; border-radius: 4px; border: 1px solid var(--border); font-family: inherit; }
+
+  /* autocomplete */
+  .ac-wrap { position: relative; }
+  .ac-drop {
+    position: absolute; top: calc(100% + 2px); left: 0; right: 0;
+    background: #fff; border: 1px solid var(--border); border-radius: var(--r);
+    max-height: 140px; overflow-y: auto; z-index: 10;
+    box-shadow: 0 4px 12px rgba(0,0,0,.1);
+  }
+  .ac-item { padding: 6px 8px; font-size: 12px; cursor: pointer; color: var(--text); }
+  .ac-item:hover { background: var(--surface); }
+
+  /* warn */
+  .warn { background: var(--warn-bg); border: 1px solid var(--warn-border); border-radius: 6px; padding: 9px 11px; font-size: 11.5px; color: var(--warn-text); line-height: 1.5; }
+  .warn-title { font-weight: 700; font-size: 12px; margin-bottom: 3px; }
+  .warn select { margin-top: 5px; width: 100%; font-size: 12px; padding: 4px 6px; border-radius: 4px; border: 1px solid var(--warn-border); background: #fff; color: var(--warn-text); font-family: inherit; }
+
+  /* buttons */
+  .btn-add {
+    width: 100%; background: #fff; color: var(--text2);
+    border: 1.5px dashed var(--border); border-radius: var(--r);
+    padding: 8px; font-size: 12px; font-weight: 500; cursor: pointer; font-family: inherit;
+  }
+  .btn-add:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-run {
+    width: 100%; background: var(--accent); color: #fff;
+    border: none; border-radius: var(--r);
+    padding: 9px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit;
+    margin-top: 8px; transition: opacity .1s;
+  }
+  .btn-run:hover { opacity: .88; }
+  .btn-run:disabled { opacity: .4; cursor: not-allowed; }
+
+  /* status */
+  .status { font-size: 12px; text-align: center; font-weight: 500; padding: 4px 0; }
+  .status.ok { color: var(--ok); }
+  .status.err { color: var(--err); }
+  .hidden { display: none; }
+
+  /* refresh button */
+  .btn-refresh {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    padding: 3px 8px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text2);
+    cursor: pointer;
+    font-family: inherit;
+    transition: border-color .12s, color .12s;
+  }
+  .btn-refresh:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+  .btn-refresh:disabled { opacity: .5; cursor: not-allowed; }
+  .section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 7px; }
+</style>
+</head>
+<body>
+
+<div class="header">Font Replacer</div>
+<div class="body">
+
+  <!-- scope -->
+  <div>
+    <div class="section-head">
+      <div class="lbl" style="margin-bottom:0">替換範圍</div>
+      <button class="btn-refresh" id="btn-refresh" onclick="doRefresh()">↻ 重新偵測</button>
+    </div>
+    <div class="scope-row">
+      <button class="scope-btn on" data-scope="file" onclick="setScope(this)">整個檔案</button>
+      <button class="scope-btn" data-scope="page" onclick="setScope(this)">當前頁面</button>
+    </div>
+  </div>
+
+  <!-- pairs -->
+  <div>
+    <div class="lbl">字體替換對照</div>
+    <div class="pairs" id="pairs"></div>
+  </div>
+
+  <!-- fallbacks (shown only when needed) -->
+  <div id="fallbacks" class="hidden"></div>
+
+  <!-- same-font error -->
+  <div id="same-err" class="status err hidden">來源與目標字體相同，請重新選擇</div>
+
+  <!-- actions -->
+  <div>
+    <button class="btn-add" onclick="addPair()">+ 新增替換對照</button>
+    <button class="btn-run" id="btn-run" onclick="doReplace()">執行替換</button>
+  </div>
+
+  <!-- result -->
+  <div id="status" class="status hidden"></div>
+
+</div>
+
+<script>
+  // ── state ──────────────────────────────────────────────────────────────────
+  let scope = 'file'
+  let usedFonts = []           // [{family, style}]
+  let availableFamilies = []   // string[]
+  let pairs = []               // [{id, fromFamily, fromStyle, toFamily}]
+  let unresolvedItems = []     // from main thread
+  let fallbackChoices = {}     // {i: toStyle}
+  let nextId = 1
+
+  // ── receive from main thread ───────────────────────────────────────────────
+  window.onmessage = (event) => {
+    const msg = event.data.pluginMessage
+    if (!msg) return
+
+    if (msg.type === 'init') {
+      usedFonts = msg.usedFonts
+      availableFamilies = msg.availableFamilies
+      if (pairs.length === 0 && usedFonts.length > 0) {
+        addPair()
+      } else {
+        renderPairs()
+      }
+      setStatus('', '')
+      const rb = document.getElementById('btn-refresh')
+      rb.textContent = '↻ 重新偵測'
+      rb.disabled = false
+    }
+
+    if (msg.type === 'unresolved') {
+      unresolvedItems = msg.items
+      fallbackChoices = {}
+      msg.items.forEach((item, i) => {
+        fallbackChoices[i] = item.candidates[0] || 'Regular'
+      })
+      renderFallbacks()
+      setStatus('', '')
+      setRunning(false)
+    }
+
+    if (msg.type === 'done') {
+      setStatus('ok', '✓ 已替換 ' + msg.replaced + ' 個文字物件')
+      unresolvedItems = []
+      fallbackChoices = {}
+      document.getElementById('fallbacks').innerHTML = ''
+      document.getElementById('fallbacks').classList.add('hidden')
+      setRunning(false)
+    }
+
+    if (msg.type === 'error') {
+      setStatus('err', '錯誤：' + msg.message)
+      setRunning(false)
+    }
+  }
+
+  // ── scope ──────────────────────────────────────────────────────────────────
+  function setScope(btn) {
+    document.querySelectorAll('.scope-btn').forEach(b => b.classList.remove('on'))
+    btn.classList.add('on')
+    scope = btn.dataset.scope
+  }
+
+  // ── pairs ──────────────────────────────────────────────────────────────────
+  function families() {
+    return [...new Set(usedFonts.map(f => f.family))]
+  }
+
+  function stylesFor(family) {
+    return usedFonts.filter(f => f.family === family).map(f => f.style)
+  }
+
+  function addPair() {
+    const first = usedFonts[0]
+    pairs.push({
+      id: nextId++,
+      fromFamily: first ? first.family : '',
+      fromStyle: first ? first.style : 'Regular',
+      toFamily: ''
+    })
+    renderPairs()
+  }
+
+  function removePair(id) {
+    pairs = pairs.filter(p => p.id !== id)
+    renderPairs()
+    validate()
+  }
+
+  function renderPairs() {
+    const container = document.getElementById('pairs')
+    container.innerHTML = ''
+    pairs.forEach((p, i) => {
+      const fams = families()
+      const styles = stylesFor(p.fromFamily)
+
+      const card = document.createElement('div')
+      card.className = 'card'
+      card.dataset.id = p.id
+
+      // source family options
+      const famOpts = fams.map(f =>
+        `<option value="${esc(f)}"${f === p.fromFamily ? ' selected' : ''}>${esc(f)}</option>`
+      ).join('')
+
+      // style sub-row (only if > 1 style for this family)
+      const styleRow = styles.length > 1
+        ? `<div class="style-row">
+             <select onchange="updateStyle(${p.id}, this.value)">
+               ${styles.map(s => `<option value="${esc(s)}"${s === p.fromStyle ? ' selected' : ''}>${esc(s)}</option>`).join('')}
+             </select>
+           </div>`
+        : ''
+
+      card.innerHTML = `
+        <div class="card-head">
+          <span class="card-num">對照 ${i + 1}</span>
+          <button class="card-del" onclick="removePair(${p.id})" title="刪除">×</button>
+        </div>
+        <div class="card-row">
+          <select onchange="updateFrom(${p.id}, this.value)">
+            ${famOpts}
+          </select>
+          <span class="arrow">→</span>
+          <div class="ac-wrap" id="ac-${p.id}">
+            <input
+              value="${esc(p.toFamily)}"
+              placeholder="搜尋字體…"
+              oninput="acInput(${p.id}, this)"
+              onfocus="acShow(${p.id}, this)"
+            >
+            <div class="ac-drop hidden" id="drop-${p.id}"></div>
+          </div>
+        </div>
+        ${styleRow}
+      `
+      container.appendChild(card)
+    })
+    validate()
+  }
+
+  function updateFrom(id, family) {
+    const p = pairs.find(p => p.id === id)
+    if (!p) return
+    const styles = stylesFor(family)
+    p.fromFamily = family
+    p.fromStyle = styles[0] || 'Regular'
+    renderPairs()
+  }
+
+  function updateStyle(id, style) {
+    const p = pairs.find(p => p.id === id)
+    if (p) { p.fromStyle = style; validate() }
+  }
+
+  // ── autocomplete ───────────────────────────────────────────────────────────
+  function acInput(id, input) {
+    const p = pairs.find(p => p.id === id)
+    if (p) p.toFamily = input.value
+    showDrop(id, input.value)
+    validate()
+  }
+
+  function acShow(id, input) {
+    showDrop(id, input.value)
+  }
+
+  function showDrop(id, query) {
+    const drop = document.getElementById('drop-' + id)
+    if (!drop) return
+    const matches = query.length > 0
+      ? availableFamilies.filter(f => f.toLowerCase().includes(query.toLowerCase())).slice(0, 20)
+      : []
+    if (matches.length === 0) { drop.classList.add('hidden'); return }
+    drop.innerHTML = matches.map(f =>
+      `<div class="ac-item" onmousedown="acPick(${id}, '${esc(f)}')">${esc(f)}</div>`
+    ).join('')
+    drop.classList.remove('hidden')
+  }
+
+  function acPick(id, family) {
+    const p = pairs.find(p => p.id === id)
+    if (p) p.toFamily = family
+    const drop = document.getElementById('drop-' + id)
+    if (drop) drop.classList.add('hidden')
+    // update input value
+    const wrap = document.getElementById('ac-' + id)
+    if (wrap) { const inp = wrap.querySelector('input'); if (inp) inp.value = family }
+    validate()
+  }
+
+  // close dropdowns when clicking outside
+  document.addEventListener('click', (e) => {
+    document.querySelectorAll('.ac-drop').forEach(d => {
+      if (!d.parentElement.contains(e.target)) d.classList.add('hidden')
+    })
+  })
+
+  // ── fallbacks ──────────────────────────────────────────────────────────────
+  function renderFallbacks() {
+    const container = document.getElementById('fallbacks')
+    container.innerHTML = ''
+    if (unresolvedItems.length === 0) { container.classList.add('hidden'); return }
+
+    unresolvedItems.forEach((item, i) => {
+      const box = document.createElement('div')
+      box.className = 'warn'
+      const opts = item.candidates.map(c =>
+        `<option value="${esc(c)}"${c === fallbackChoices[i] ? ' selected' : ''}>${esc(c)}</option>`
+      ).join('')
+      box.innerHTML = `
+        <div class="warn-title">⚠️ 找不到對應樣式</div>
+        <div><strong>${esc(item.fromFont.family)} ${esc(item.fromFont.style)}</strong> 在 ${esc(item.toFamily)} 中沒有對應字重，請選擇替代：</div>
+        <select onchange="fallbackChoices[${i}] = this.value">${opts}</select>
+      `
+      container.appendChild(box)
+    })
+    container.classList.remove('hidden')
+  }
+
+  // ── validation ─────────────────────────────────────────────────────────────
+  function validate() {
+    const sameFont = pairs.some(p => p.fromFamily && p.toFamily && p.fromFamily === p.toFamily)
+    const anyEmpty = pairs.some(p => !p.toFamily)
+    const noPairs = pairs.length === 0
+
+    document.getElementById('same-err').classList.toggle('hidden', !sameFont)
+    document.getElementById('btn-run').disabled = noPairs || sameFont || anyEmpty
+  }
+
+  // ── replace ────────────────────────────────────────────────────────────────
+  function doReplace() {
+    const msgPairs = pairs.map(p => ({
+      from: { family: p.fromFamily, style: p.fromStyle },
+      to: { family: p.toFamily, style: '' }
+    }))
+
+    setStatus('', '')
+    setRunning(true)
+
+    if (unresolvedItems.length > 0) {
+      const fallbacks = unresolvedItems.map((item, i) => ({
+        fromFont: item.fromFont,
+        toFamily: item.toFamily,
+        toStyle: fallbackChoices[i] || item.candidates[0] || 'Regular'
+      }))
+      parent.postMessage({ pluginMessage: { type: 'applyWithFallbacks', scope, pairs: msgPairs, fallbacks } }, '*')
+    } else {
+      parent.postMessage({ pluginMessage: { type: 'replace', scope, pairs: msgPairs } }, '*')
+    }
+  }
+
+  // ── helpers ────────────────────────────────────────────────────────────────
+  function setStatus(type, msg) {
+    const el = document.getElementById('status')
+    if (!msg) { el.classList.add('hidden'); return }
+    el.className = 'status ' + (type || '')
+    el.textContent = msg
+    el.classList.remove('hidden')
+  }
+
+  function setRunning(running) {
+    const btn = document.getElementById('btn-run')
+    btn.textContent = running ? '替換中…' : '執行替換'
+    if (!running) validate()
+    else btn.disabled = true
+  }
+
+  function doRefresh() {
+    const rb = document.getElementById('btn-refresh')
+    rb.textContent = '偵測中…'
+    rb.disabled = true
+    parent.postMessage({ pluginMessage: { type: 'refresh' } }, '*')
+  }
+
+  function esc(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')
+  }
+</script>
+</body>
+</html>

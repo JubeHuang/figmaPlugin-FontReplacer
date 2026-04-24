@@ -21,10 +21,12 @@
     --rm: 8px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 13px; color: var(--text); background: var(--bg); }
+  html, body { height: 100%; overflow: hidden; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 13px; color: var(--text); background: var(--bg); display: flex; flex-direction: column; }
 
-  .header { background: var(--accent); color: #fff; padding: 10px 14px; font-weight: 600; font-size: 14px; }
-  .body { padding: 14px; display: flex; flex-direction: column; gap: 14px; }
+  .header { background: var(--accent); color: #fff; padding: 10px 14px; font-weight: 600; font-size: 14px; flex-shrink: 0; }
+  .body { padding: 14px; display: flex; flex-direction: column; gap: 14px; flex: 1; overflow-y: auto; }
+  .footer { padding: 10px 14px 14px; flex-shrink: 0; border-top: 1px solid var(--border); background: var(--bg); }
 
   .lbl { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--label); margin-bottom: 7px; }
 
@@ -53,14 +55,28 @@
   .card-del:hover { color: #ef4444; }
   .card-row { display: grid; grid-template-columns: 1fr 18px 1fr; align-items: center; gap: 5px; }
   .card-row select, .card-row input {
-    font-size: 12px; padding: 6px 7px; border-radius: var(--r);
+    font-size: 12px; padding: 6px 8px; border-radius: var(--r);
     border: 1px solid var(--border); background: #fff;
     color: var(--text); font-family: inherit; width: 100%;
+    -webkit-appearance: none; appearance: none;
+  }
+  .card-row select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 4.5l3 3 3-3' fill='none' stroke='%234b5563' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    padding-right: 28px;
   }
   .card-row select:focus, .card-row input:focus { outline: none; border-color: var(--accent); }
   .arrow { text-align: center; color: var(--text2); font-size: 13px; }
   .style-row { margin-top: 6px; }
-  .style-row select { font-size: 11px; padding: 3px 5px; width: 100%; border-radius: 4px; border: 1px solid var(--border); font-family: inherit; }
+  .style-row select {
+    font-size: 11px; padding: 3px 8px; width: 100%; border-radius: 4px;
+    border: 1px solid var(--border); font-family: inherit;
+    -webkit-appearance: none; appearance: none;
+    background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 4.5l3 3 3-3' fill='none' stroke='%234b5563' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 8px center;
+    padding-right: 28px;
+  }
+  .style-row select:focus { outline: none; border-color: var(--accent); }
 
   /* autocomplete */
   .ac-wrap { position: relative; }
@@ -147,15 +163,12 @@
   <!-- same-font error -->
   <div id="same-err" class="status err hidden">來源與目標字體相同，請重新選擇</div>
 
-  <!-- actions -->
-  <div>
-    <button class="btn-add" onclick="addPair()">+ 新增替換對照</button>
-    <button class="btn-run" id="btn-run" onclick="doReplace()">執行替換</button>
-  </div>
+</div>
 
-  <!-- result -->
+<div class="footer">
+  <button class="btn-add" onclick="addPair()">+ 新增替換對照</button>
+  <button class="btn-run" id="btn-run" onclick="doReplace()">執行替換</button>
   <div id="status" class="status hidden"></div>
-
 </div>
 
 <script>

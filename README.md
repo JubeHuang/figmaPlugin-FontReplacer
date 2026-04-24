@@ -11,9 +11,13 @@
 - 當目標字體缺少對應字重時，自動提示選擇替代樣式
 - 支援重新偵測，新增文字後無需重啟外掛
 
-## 截圖
+## 介面
 
-![Font Replacer UI](https://github.com/JubeHuang/figmaPlugin-FontReplacer/blob/main/src/assets/FontReplacerUI.png)
+<div align="center">
+  <img src="https://github.com/JubeHuang/figmaPlugin-FontReplacer/blob/main/src/assets/FontReplacerUI.png" width="30%" />
+  <img src="https://github.com/JubeHuang/figmaPlugin-FontReplacer/blob/main/src/assets/FontReplacerUI2.png" width="30%" />
+  <img src="https://github.com/JubeHuang/figmaPlugin-FontReplacer/blob/main/src/assets/FontReplacerUI3.png" width="30%" />
+</div>
 
 ## 安裝與開發
 
@@ -25,7 +29,7 @@
 ### 安裝步驟
 
 ```bash
-git clone https://github.com/your-username/font-replacer.git
+git clone https://github.com/JubeHuang/figmaPlugin-FontReplacer.git
 cd font-replacer
 npm install
 ```
@@ -80,31 +84,6 @@ npm run build
 ### 5. 重新偵測字體
 
 如果你在外掛開啟後新增了文字圖層或匯入了新元件，點擊「替換範圍」旁的 **↻ 重新偵測** 按鈕，即可重新掃描已使用的字體列表，無需關閉再重開外掛。
-
-## 專案結構
-
-```
-├── manifest.json          # Figma 外掛設定檔
-├── code.ts                # 外掛主邏輯（打包入口）
-├── ui.html                # 外掛 UI 介面
-├── src/
-│   ├── types.ts           # TypeScript 型別定義
-│   ├── logic/
-│   │   ├── fontScanner.ts # 字體掃描與去重
-│   │   └── styleMatcher.ts# 字重比對與 fallback
-│   └── __tests__/         # 測試檔案
-├── package.json
-└── tsconfig.json
-```
-
-## 指令
-
-| 指令 | 說明 |
-|------|------|
-| `npm run build` | 打包 code.ts → code.js |
-| `npm run typecheck` | TypeScript 型別檢查 |
-| `npm run lint` | ESLint 程式碼檢查 |
-| `npm run lint:fix` | 自動修復 lint 問題 |
 
 ## License
 

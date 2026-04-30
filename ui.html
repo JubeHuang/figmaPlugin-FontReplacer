@@ -3,185 +3,465 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500&family=Inter:wght@400;500;600;900&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #fff;
-    --surface: #f4f5f7;
-    --border: #d0d4db;
-    --text: #111827;
-    --text2: #4b5563;
-    --label: #374151;
-    --accent: #0062FF;
-    --warn-bg: #fffbeb;
-    --warn-border: #c08000;
-    --warn-text: #5c3d00;
-    --ok: #15803d;
-    --err: #b91c1c;
-    --r: 5px;
-    --rm: 8px;
+    --accent:     #739bff;
+    --dark:       #112a46;
+    --text:       #333;
+    --card-bg:    #fbfcff;
+    --sel-bg:     rgba(17, 42, 70, 0.10);
+    --wm-src:     #cddbff;
+    --wm-dst:     #a3b8ed;
+    --body-font:  'Noto Sans TC', sans-serif;
+    --num-font:   'Inter', sans-serif;
   }
+
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { height: 100%; overflow: hidden; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 13px; color: var(--text); background: var(--bg); display: flex; flex-direction: column; }
-
-  .header { background: var(--accent); color: #fff; padding: 10px 14px; font-weight: 600; font-size: 14px; flex-shrink: 0; }
-  .body { padding: 14px; display: flex; flex-direction: column; gap: 14px; flex: 1; overflow-y: auto; }
-  .footer { padding: 10px 14px 14px; flex-shrink: 0; border-top: 1px solid var(--border); background: var(--bg); }
-
-  .lbl { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--label); margin-bottom: 7px; }
-
-  /* scope buttons */
-  .scope-row { display: flex; gap: 6px; }
-  .scope-btn {
-    flex: 1; padding: 7px 0; font-size: 12px; font-weight: 500;
-    border: 1.5px solid var(--border); border-radius: 6px;
-    cursor: pointer; background: #fff; color: var(--text2); font-family: inherit;
-    transition: background .12s, color .12s, border-color .12s;
+  body {
+    font-family: var(--body-font);
+    font-size: 12px;
+    color: var(--text);
+    background: linear-gradient(7.666deg, #ffffff 50%, #eef3ff 100%) fixed;
+    background-attachment: fixed;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-width: 240px;
   }
-  .scope-btn:hover:not(.on) { border-color: #9ab3d6; color: var(--text); }
-  .scope-btn.on { background: var(--accent); color: #fff; font-weight: 600; border-color: var(--accent); }
 
-  /* pair cards */
-  .pairs { display: flex; flex-direction: column; gap: 8px; }
-  .card {
-    background: var(--surface); border-radius: var(--rm);
-    padding: 10px; border: 1px solid var(--border);
-    animation: slideIn .15s ease-out;
+  /* ── SCROLLABLE BODY ─────────────────────────────── */
+  .body {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 22px 20px 148px;
+    display: flex;
+    flex-direction: column;
   }
-  @keyframes slideIn { from { opacity:0; transform:translateY(-5px); } to { opacity:1; transform:translateY(0); } }
-  .card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 7px; }
-  .card-num { font-size: 11px; color: var(--label); font-weight: 700; }
-  .card-del { font-size: 17px; color: #9ca3af; cursor: pointer; background: none; border: none; padding: 0 2px; line-height: 1; font-family: inherit; }
-  .card-del:hover { color: #ef4444; }
-  .card-row { display: grid; grid-template-columns: 1fr 18px 1fr; align-items: center; gap: 5px; }
-  .card-row select, .card-row input {
-    font-size: 12px; padding: 6px 8px; border-radius: var(--r);
-    border: 1px solid var(--border); background: #fff;
-    color: var(--text); font-family: inherit; width: 100%;
-    -webkit-appearance: none; appearance: none;
-  }
-  .card-row select {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 4.5l3 3 3-3' fill='none' stroke='%234b5563' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 8px center;
-    padding-right: 28px;
-  }
-  .card-row select:focus, .card-row input:focus { outline: none; border-color: var(--accent); }
-  .arrow { text-align: center; color: var(--text2); font-size: 13px; }
-  .style-row { margin-top: 6px; }
-  .style-row select {
-    font-size: 11px; padding: 3px 8px; width: 100%; border-radius: 4px;
-    border: 1px solid var(--border); font-family: inherit;
-    -webkit-appearance: none; appearance: none;
-    background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 4.5l3 3 3-3' fill='none' stroke='%234b5563' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 8px center;
-    padding-right: 28px;
-  }
-  .style-row select:focus { outline: none; border-color: var(--accent); }
+  .body::-webkit-scrollbar { width: 3px; }
+  .body::-webkit-scrollbar-track { background: transparent; }
+  .body::-webkit-scrollbar-thumb { background: rgba(17,42,70,0.15); border-radius: 2px; }
 
-  /* autocomplete */
-  .ac-wrap { position: relative; }
-  .ac-drop {
-    position: absolute; top: calc(100% + 2px); left: 0; right: 0;
-    background: #fff; border: 1px solid var(--border); border-radius: var(--r);
-    max-height: 140px; overflow-y: auto; z-index: 10;
-    box-shadow: 0 4px 12px rgba(0,0,0,.1);
+  /* ── SECTION HEADER ──────────────────────────────── */
+  .section-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
   }
-  .ac-item { padding: 6px 8px; font-size: 12px; cursor: pointer; color: var(--text); }
-  .ac-item:hover { background: var(--surface); }
-
-  /* warn */
-  .warn { background: var(--warn-bg); border: 1px solid var(--warn-border); border-radius: 6px; padding: 9px 11px; font-size: 11.5px; color: var(--warn-text); line-height: 1.5; }
-  .warn-title { font-weight: 700; font-size: 12px; margin-bottom: 3px; }
-  .warn select { margin-top: 5px; width: 100%; font-size: 12px; padding: 4px 6px; border-radius: 4px; border: 1px solid var(--warn-border); background: #fff; color: var(--warn-text); font-family: inherit; }
-
-  /* buttons */
-  .btn-add {
-    width: 100%; background: #fff; color: var(--text2);
-    border: 1.5px dashed var(--border); border-radius: var(--r);
-    padding: 8px; font-size: 12px; font-weight: 500; cursor: pointer; font-family: inherit;
+  .accent-bar {
+    width: 2px;
+    height: 11px;
+    background: var(--accent);
+    border-radius: 1px;
+    flex-shrink: 0;
   }
-  .btn-add:hover { border-color: var(--accent); color: var(--accent); }
-  .btn-run {
-    width: 100%; background: var(--accent); color: #fff;
-    border: none; border-radius: var(--r);
-    padding: 9px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit;
-    margin-top: 8px; transition: opacity .1s;
+  .section-lbl {
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--text);
+    flex: 1;
+    letter-spacing: 0.02em;
   }
-  .btn-run:hover { opacity: .88; }
-  .btn-run:disabled { opacity: .4; cursor: not-allowed; }
-
-  /* status */
-  .status { font-size: 12px; text-align: center; font-weight: 500; padding: 4px 0; }
-  .status.ok { color: var(--ok); }
-  .status.err { color: var(--err); }
-  .hidden { display: none; }
-
-  /* refresh button */
   .btn-refresh {
     background: none;
-    border: 1px solid var(--border);
-    border-radius: var(--r);
-    padding: 3px 8px;
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--text2);
+    border: none;
+    font-family: var(--num-font);
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--text);
     cursor: pointer;
-    font-family: inherit;
-    transition: border-color .12s, color .12s;
+    padding: 2px 4px;
+    opacity: 0.7;
+    transition: opacity 0.12s;
+    line-height: 1;
   }
-  .btn-refresh:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
-  .btn-refresh:disabled { opacity: .5; cursor: not-allowed; }
-  .section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 7px; }
+  .btn-refresh:hover:not(:disabled) { opacity: 1; }
+  .btn-refresh:disabled { opacity: 0.35; cursor: not-allowed; }
+
+  /* ── SCOPE BUTTONS ───────────────────────────────── */
+  .scope-row {
+    display: flex;
+    gap: 12px;
+    margin-top: 14px;
+    margin-bottom: 27px;
+  }
+  .scope-btn {
+    flex: 1;
+    height: 30px;
+    border-radius: 6px;
+    font-family: var(--body-font);
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    border: 1.5px solid rgba(17, 42, 70, 0.10);
+    background: rgba(255, 255, 255, 0.50);
+    backdrop-filter: blur(2.5px);
+    -webkit-backdrop-filter: blur(2.5px);
+    color: var(--text);
+    transition: background 0.12s, border-color 0.12s, color 0.12s;
+  }
+  .scope-btn.on {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+    font-weight: 500;
+  }
+  .scope-btn:hover:not(.on) { border-color: rgba(115,155,255,0.5); }
+
+  /* ── SECTION 2 ───────────────────────────────────── */
+  .section-row-2 { margin-bottom: 12px; }
+
+  /* ── PAIRS CONTAINER ─────────────────────────────── */
+  .pairs {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* ── CARD ────────────────────────────────────────── */
+  .card {
+    width: 100%;
+    background: var(--card-bg);
+    border: 1px solid #fff;
+    border-radius: 16px;
+    box-shadow: 0 0 10px 0 rgba(17, 42, 70, 0.08);
+    overflow: hidden;
+    flex-shrink: 0;
+    animation: slideIn .15s ease-out;
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes slideOut {
+    from { opacity: 1; transform: translateY(0); max-height: 200px; margin-bottom: 0; }
+    to   { opacity: 0; transform: translateY(-4px); max-height: 0;   margin-bottom: -12px; }
+  }
+
+  /* ── CARD PREVIEW (fixed 117px upper section) ─────── */
+  .card-preview {
+    position: relative;
+    height: 117px;
+    overflow: hidden;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+  }
+
+  /* gradient overlays */
+  .card-grad-l,
+  .card-grad-r {
+    position: absolute;
+    top: 0;
+    width: 50%;
+    height: 100%;
+    pointer-events: none;
+  }
+  .card-grad-l {
+    left: 0;
+    background: linear-gradient(to bottom,
+      rgba(255,255,255,0)   0%,
+      rgba(209,222,255,0.5) 100%);
+  }
+  .card-grad-r {
+    left: 50%;
+    background: linear-gradient(to bottom,
+      rgba(255,255,255,0)   0%,
+      rgba(188,203,241,0.5) 100%);
+  }
+
+  /* watermark row — anchored to bottom of preview area */
+  .card-wm-row {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 52px;
+    display: flex;
+    pointer-events: none;
+  }
+  .card-wm-src,
+  .card-wm-dst {
+    width: 50%;
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+    padding-left: 10px;
+    overflow: hidden;
+    font-size: 48px;
+    line-height: 1;
+    white-space: nowrap;
+  }
+  .card-wm-src { color: var(--wm-src); font-family: var(--num-font); font-weight: 400; }
+  .card-wm-dst { color: var(--wm-dst); font-family: var(--num-font); font-weight: 400; }
+
+  /* card body (head + input row) — above gradient + wm via DOM order */
+  .card-body {
+    position: relative;
+  }
+
+  /* card head */
+  .card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px 0;
+    height: 28px;
+  }
+  .card-num {
+    font-size: 10px;
+    font-weight: 400;
+    color: var(--dark);
+    letter-spacing: 0.02em;
+  }
+  .card-del {
+    font-family: var(--num-font);
+    font-size: 17px;
+    color: rgba(17, 42, 70, 0.50);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    transition: color 0.1s;
+  }
+  .card-del:hover { color: rgba(17, 42, 70, 0.85); }
+
+  /* card input row */
+  .card-row {
+    display: grid;
+    grid-template-columns: 1fr 28px 1fr;
+    align-items: center;
+    padding: 6px 16px 0;
+  }
+  .card-row select,
+  .card-row input {
+    width: 100%;
+    height: 31px;
+    background: var(--sel-bg);
+    border: none;
+    border-radius: 6px;
+    padding: 0 10px;
+    font-family: var(--body-font);
+    font-size: 12px;
+    color: #000;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+    transition: box-shadow 0.12s;
+  }
+  .card-row select { cursor: pointer; }
+  .card-row select:focus,
+  .card-row input:focus  { box-shadow: 0 0 0 1.5px var(--accent); }
+  .card-row input::placeholder { color: rgba(17, 42, 70, 0.30); }
+
+  .card-arrow {
+    text-align: center;
+    font-family: var(--num-font);
+    font-weight: 900;
+    font-size: 13px;
+    color: #000;
+  }
+  .ac-wrap {
+    min-width: 0;
+    position: relative;
+  }
+
+  /* ── STYLE ROW (grows card downward) ─────────────── */
+  .style-row {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    height: 34px;
+    border-top: 1px solid rgba(17, 42, 70, 0.06);
+    background: var(--card-bg);
+  }
+  /* 隱形 select 覆蓋整列，確保點箭頭也能打開 */
+  .style-row select {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 1;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  /* 顯示用文字 */
+  .style-val {
+    flex: 1;
+    font-family: var(--body-font);
+    font-size: 12px;
+    color: #000;
+    pointer-events: none;
+  }
+  .style-chevron {
+    display: flex;
+    align-items: center;
+    opacity: 0.45;
+    pointer-events: none;
+    flex-shrink: 0;
+  }
+
+  /* ── AUTOCOMPLETE ────────────────────────────────── */
+  .ac-drop {
+    position: fixed;   /* fixed 避免被 overflow:hidden 截斷 */
+    background: var(--card-bg);
+    border: 1px solid rgba(17, 42, 70, 0.10);
+    border-radius: 10px;
+    max-height: 140px;
+    overflow-y: auto;
+    z-index: 9999;
+    box-shadow: 0 6px 20px rgba(17, 42, 70, 0.12);
+  }
+  .ac-drop::-webkit-scrollbar { width: 3px; }
+  .ac-drop::-webkit-scrollbar-thumb { background: rgba(17,42,70,0.15); border-radius: 2px; }
+  .ac-item {
+    padding: 7px 10px;
+    font-size: 12px;
+    font-family: var(--body-font);
+    cursor: pointer;
+    color: var(--dark);
+  }
+  .ac-item:hover { background: rgba(115,155,255,0.08); }
+
+  /* ── FALLBACK WARN ───────────────────────────────── */
+  .warn {
+    background: #fffbeb;
+    border: 1px solid #FFD673;
+    border-radius: 8px;
+    padding: 9px 11px;
+    font-size: 11.5px;
+    color: #5c3d00;
+    line-height: 1.5;
+    margin-top: 12px;
+  }
+  .warn-title { font-weight: 700; font-size: 12px; margin-bottom: 3px; }
+  .warn select {
+    margin-top: 5px;
+    width: 100%;
+    font-size: 12px;
+    padding: 4px 6px;
+    border-radius: 4px;
+    border: 1px solid #FFD673;
+    background: #fff;
+    color: #5c3d00;
+    font-family: inherit;
+  }
+
+  /* ── STATUS ──────────────────────────────────────── */
+  .status { font-size: 12px; text-align: center; font-weight: 500; padding: 4px 0; }
+  .status.ok  { color: #15803d; }
+  .status.err { color: #b91c1c; }
+  .hidden { display: none; }
+  #same-err { margin-top: 10px; }
+
+  /* ── FOOTER (frosted glass) ──────────────────────── */
+  .footer {
+    position: fixed;
+    left: 0; bottom: 0; right: 0;
+    height: auto;
+    background: rgba(255, 255, 255, 0.50);
+    backdrop-filter: blur(2.5px);
+    -webkit-backdrop-filter: blur(2.5px);
+    border-top: 1px solid #fbfcff;
+    box-shadow: 0 0 4px 0 rgba(17, 42, 70, 0.10);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 500;
+  }
+
+  .btn-add {
+    width: 100%;
+    height: 38px;
+    background: #fff;
+    border: 1px dashed rgba(17, 42, 70, 0.20);
+    border-radius: 5px;
+    font-family: var(--num-font);
+    font-weight: 500;
+    font-size: 12px;
+    color: var(--text);
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .btn-add:hover { border-color: var(--accent); color: var(--accent); }
+
+  .btn-run {
+    width: 100%;
+    height: 38px;
+    background: var(--accent);
+    border: none;
+    border-radius: 5px;
+    font-family: var(--body-font);
+    font-weight: 500;
+    font-size: 12px;
+    color: #fff;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: opacity 0.10s;
+  }
+  .btn-run:hover    { opacity: 0.88; }
+  .btn-run:disabled { opacity: 0.40; cursor: not-allowed; }
+
+  #status { margin-top: 2px; font-size: 11.5px; }
 </style>
 </head>
 <body>
 
-<div class="header">Font Replacer</div>
 <div class="body">
 
-  <!-- scope -->
-  <div>
-    <div class="section-head">
-      <div class="lbl" style="margin-bottom:0">替換範圍</div>
-      <button class="btn-refresh" id="btn-refresh" onclick="doRefresh()">↻ 重新偵測</button>
-    </div>
-    <div class="scope-row">
-      <button class="scope-btn on" data-scope="file" onclick="setScope(this)">整個檔案</button>
-      <button class="scope-btn" data-scope="page" onclick="setScope(this)">當前頁面</button>
-    </div>
+  <!-- ── Section 1: 替換範圍 -->
+  <div class="section-row">
+    <div class="accent-bar"></div>
+    <span class="section-lbl">替換範圍</span>
+    <button class="btn-refresh" id="btn-refresh" onclick="doRefresh()">↻</button>
   </div>
 
-  <!-- pairs -->
-  <div>
-    <div class="lbl">字體替換對照</div>
-    <div class="pairs" id="pairs"></div>
+  <!-- Scope toggle -->
+  <div class="scope-row">
+    <button class="scope-btn on" data-scope="file" onclick="setScope(this)">整個檔案</button>
+    <button class="scope-btn"    data-scope="page" onclick="setScope(this)">當前頁面</button>
   </div>
 
-  <!-- fallbacks (shown only when needed) -->
+  <!-- ── Section 2: 字體替換對照 -->
+  <div class="section-row section-row-2">
+    <div class="accent-bar"></div>
+    <span class="section-lbl">字體替換對照</span>
+  </div>
+
+  <div class="pairs" id="pairs"></div>
+
   <div id="fallbacks" class="hidden"></div>
-
-  <!-- same-font error -->
   <div id="same-err" class="status err hidden">來源與目標字體相同，請重新選擇</div>
 
 </div>
 
 <div class="footer">
   <button class="btn-add" onclick="addPair()">+ 新增替換對照</button>
-  <button class="btn-run" id="btn-run" onclick="doReplace()">執行替換</button>
+  <button class="btn-run hidden" id="btn-run" onclick="doReplace()">執行替換</button>
   <div id="status" class="status hidden"></div>
 </div>
 
 <script>
-  // ── state ──────────────────────────────────────────────────────────────────
+  // ── state ──────────────────────────────────────────
   let scope = 'file'
-  let usedFonts = []           // [{family, style}]
-  let availableFamilies = []   // string[]
-  let pairs = []               // [{id, fromFamily, fromStyle, toFamily}]
-  let unresolvedItems = []     // from main thread
-  let fallbackChoices = {}     // {i: toStyle}
+  let usedFonts = []
+  let availableFamilies = []
+  let pairs = []
+  let unresolvedItems = []
+  let fallbackChoices = {}
   let nextId = 1
 
-  // ── receive from main thread ───────────────────────────────────────────────
+  // ── plugin messages ────────────────────────────────
   window.onmessage = (event) => {
     const msg = event.data.pluginMessage
     if (!msg) return
@@ -196,7 +476,7 @@
       }
       setStatus('', '')
       const rb = document.getElementById('btn-refresh')
-      rb.textContent = '↻ 重新偵測'
+      rb.textContent = '↻'
       rb.disabled = false
     }
 
@@ -212,7 +492,11 @@
     }
 
     if (msg.type === 'done') {
+      // 替換完成：顯示成功訊息、重置為一張空卡片、隱藏執行按鈕
       setStatus('ok', '✓ 已替換 ' + msg.replaced + ' 個文字物件')
+      const first = usedFonts[0]
+      pairs = [{ id: nextId++, fromFamily: first ? first.family : '', fromStyle: first ? first.style : 'Regular', toFamily: '' }]
+      renderPairs()
       unresolvedItems = []
       fallbackChoices = {}
       document.getElementById('fallbacks').innerHTML = ''
@@ -226,86 +510,122 @@
     }
   }
 
-  // ── scope ──────────────────────────────────────────────────────────────────
+  // ── scope ──────────────────────────────────────────
   function setScope(btn) {
     document.querySelectorAll('.scope-btn').forEach(b => b.classList.remove('on'))
     btn.classList.add('on')
     scope = btn.dataset.scope
   }
 
-  // ── pairs ──────────────────────────────────────────────────────────────────
+  // ── pairs ──────────────────────────────────────────
   function families() {
     return [...new Set(usedFonts.map(f => f.family))]
   }
-
   function stylesFor(family) {
     return usedFonts.filter(f => f.family === family).map(f => f.style)
   }
 
+  // ── 建立單張卡片 DOM（不含動畫控制）────────────────
+  function buildCard(p, index) {
+    const fams   = families()
+    const styles = stylesFor(p.fromFamily)
+
+    const famOpts = fams.map(f =>
+      `<option value="${esc(f)}"${f === p.fromFamily ? ' selected' : ''}>${esc(f)}</option>`
+    ).join('')
+
+    const styleRowHtml = styles.length > 1
+      ? `<div class="style-row">
+           <span class="style-val">${esc(p.fromStyle)}</span>
+           <span class="style-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 4L6 8.5L2 4" stroke="black" stroke-linecap="square" stroke-linejoin="bevel"/></svg></span>
+           <select onchange="updateStyle(${p.id}, this.value)">
+             ${styles.map(s => `<option value="${esc(s)}"${s === p.fromStyle ? ' selected' : ''}>${esc(s)}</option>`).join('')}
+           </select>
+         </div>`
+      : ''
+
+    const wmSrcStyle = p.fromFamily ? `font-family:'${esc(p.fromFamily)}', 'Inter', sans-serif` : ''
+    const wmDstStyle = p.toFamily   ? `font-family:'${esc(p.toFamily)}', 'Inter', sans-serif`   : ''
+
+    const card = document.createElement('div')
+    card.className = 'card'
+    card.dataset.id = p.id
+    card.innerHTML = `
+      <div class="card-preview">
+        <div class="card-grad-l"></div>
+        <div class="card-grad-r"></div>
+        <div class="card-wm-row">
+          <div class="card-wm-src" style="${wmSrcStyle}">${esc(p.fromFamily)}</div>
+          <div class="card-wm-dst" style="${wmDstStyle};visibility:${p.toFamily ? 'visible' : 'hidden'}">${esc(p.toFamily)}</div>
+        </div>
+        <div class="card-body">
+          <div class="card-head">
+            <span class="card-num">對照${index + 1}</span>
+            <button class="card-del" onclick="removePair(${p.id})" title="刪除">×</button>
+          </div>
+          <div class="card-row">
+            <select onchange="updateFrom(${p.id}, this.value)">${famOpts}</select>
+            <span class="card-arrow">→</span>
+            <div class="ac-wrap" id="ac-${p.id}">
+              <input
+                value="${esc(p.toFamily)}"
+                placeholder="搜尋字體…"
+                oninput="acInput(${p.id}, this)"
+                onfocus="acShow(${p.id}, this)"
+              >
+              <div class="ac-drop hidden" id="drop-${p.id}"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      ${styleRowHtml}
+    `
+    return card
+  }
+
+  // 更新卡片編號文字（刪除後用）
+  function refreshNumbers() {
+    pairs.forEach((p, i) => {
+      const c = document.querySelector(`.card[data-id="${p.id}"]`)
+      if (c) { const n = c.querySelector('.card-num'); if (n) n.textContent = `對照${i + 1}` }
+    })
+  }
+
   function addPair() {
     const first = usedFonts[0]
-    pairs.push({
+    const p = {
       id: nextId++,
       fromFamily: first ? first.family : '',
-      fromStyle: first ? first.style : 'Regular',
+      fromStyle:  first ? first.style  : 'Regular',
       toFamily: ''
-    })
-    renderPairs()
+    }
+    pairs.push(p)
+    // 直接附加新卡片，不重刷其他卡片
+    document.getElementById('pairs').appendChild(buildCard(p, pairs.length - 1))
+    validate()
   }
 
   function removePair(id) {
     pairs = pairs.filter(p => p.id !== id)
-    renderPairs()
+    const card = document.querySelector(`.card[data-id="${id}"]`)
+    if (card) {
+      card.style.animation = 'slideOut 0.12s ease-in forwards'
+      card.addEventListener('animationend', () => {
+        card.remove()
+        refreshNumbers()
+      }, { once: true })
+    }
     validate()
   }
 
   function renderPairs() {
-    const container = document.getElementById('pairs')
+    // 全量重建（初始化 / init 訊息用），現有卡片不播動畫
+    const container  = document.getElementById('pairs')
+    const existingIds = new Set([...container.querySelectorAll('.card')].map(c => c.dataset.id))
     container.innerHTML = ''
     pairs.forEach((p, i) => {
-      const fams = families()
-      const styles = stylesFor(p.fromFamily)
-
-      const card = document.createElement('div')
-      card.className = 'card'
-      card.dataset.id = p.id
-
-      // source family options
-      const famOpts = fams.map(f =>
-        `<option value="${esc(f)}"${f === p.fromFamily ? ' selected' : ''}>${esc(f)}</option>`
-      ).join('')
-
-      // style sub-row (only if > 1 style for this family)
-      const styleRow = styles.length > 1
-        ? `<div class="style-row">
-             <select onchange="updateStyle(${p.id}, this.value)">
-               ${styles.map(s => `<option value="${esc(s)}"${s === p.fromStyle ? ' selected' : ''}>${esc(s)}</option>`).join('')}
-             </select>
-           </div>`
-        : ''
-
-      card.innerHTML = `
-        <div class="card-head">
-          <span class="card-num">對照 ${i + 1}</span>
-          <button class="card-del" onclick="removePair(${p.id})" title="刪除">×</button>
-        </div>
-        <div class="card-row">
-          <select onchange="updateFrom(${p.id}, this.value)">
-            ${famOpts}
-          </select>
-          <span class="arrow">→</span>
-          <div class="ac-wrap" id="ac-${p.id}">
-            <input
-              value="${esc(p.toFamily)}"
-              placeholder="搜尋字體…"
-              oninput="acInput(${p.id}, this)"
-              onfocus="acShow(${p.id}, this)"
-            >
-            <div class="ac-drop hidden" id="drop-${p.id}"></div>
-          </div>
-        </div>
-        ${styleRow}
-      `
+      const card = buildCard(p, i)
+      if (existingIds.has(String(p.id))) card.style.animation = 'none'
       container.appendChild(card)
     })
     validate()
@@ -316,20 +636,54 @@
     if (!p) return
     const styles = stylesFor(family)
     p.fromFamily = family
-    p.fromStyle = styles[0] || 'Regular'
-    renderPairs()
+    p.fromStyle  = styles[0] || 'Regular'
+
+    const card = document.querySelector(`.card[data-id="${id}"]`)
+    if (!card) return
+
+    // 更新浮水印
+    const wmSrc = card.querySelector('.card-wm-src')
+    if (wmSrc) {
+      wmSrc.textContent = family
+      wmSrc.style.fontFamily = family ? `'${esc(family)}', 'Inter', sans-serif` : ''
+    }
+
+    // 更新 style-row：移除舊的，視需要建新的
+    const oldRow = card.querySelector('.style-row')
+    if (oldRow) oldRow.remove()
+    if (styles.length > 1) {
+      const row = document.createElement('div')
+      row.className = 'style-row'
+      row.innerHTML = `
+        <span class="style-val">${esc(p.fromStyle)}</span>
+        <span class="style-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 4L6 8.5L2 4" stroke="black" stroke-linecap="square" stroke-linejoin="bevel"/></svg></span>
+        <select onchange="updateStyle(${p.id}, this.value)">
+          ${styles.map(s => `<option value="${esc(s)}"${s === p.fromStyle ? ' selected' : ''}>${esc(s)}</option>`).join('')}
+        </select>
+      `
+      card.appendChild(row)
+    }
+    validate()
   }
 
   function updateStyle(id, style) {
     const p = pairs.find(p => p.id === id)
-    if (p) { p.fromStyle = style; validate() }
+    if (!p) return
+    p.fromStyle = style
+    const card = document.querySelector(`.card[data-id="${id}"]`)
+    if (card) {
+      const val = card.querySelector('.style-val')
+      if (val) val.textContent = style
+    }
+    validate()
   }
 
-  // ── autocomplete ───────────────────────────────────────────────────────────
+  // ── autocomplete ───────────────────────────────────
   function acInput(id, input) {
     const p = pairs.find(p => p.id === id)
     if (p) p.toFamily = input.value
     showDrop(id, input.value)
+    updateDstWm(id, input.value)
     validate()
   }
 
@@ -347,6 +701,15 @@
     drop.innerHTML = matches.map(f =>
       `<div class="ac-item" onmousedown="acPick(${id}, '${esc(f)}')">${esc(f)}</div>`
     ).join('')
+    // 用 fixed 定位，對齊 input 框下方，不受 overflow:hidden 截斷
+    const wrap = document.getElementById('ac-' + id)
+    const inp  = wrap ? wrap.querySelector('input') : null
+    if (inp) {
+      const r = inp.getBoundingClientRect()
+      drop.style.top   = (r.bottom + 4) + 'px'
+      drop.style.left  = r.left + 'px'
+      drop.style.width = r.width + 'px'
+    }
     drop.classList.remove('hidden')
   }
 
@@ -355,25 +718,38 @@
     if (p) p.toFamily = family
     const drop = document.getElementById('drop-' + id)
     if (drop) drop.classList.add('hidden')
-    // update input value
     const wrap = document.getElementById('ac-' + id)
     if (wrap) { const inp = wrap.querySelector('input'); if (inp) inp.value = family }
+    updateDstWm(id, family)
     validate()
   }
 
-  // close dropdowns when clicking outside
+  function updateDstWm(id, dstFamily) {
+    const card = document.querySelector(`.card[data-id="${id}"]`)
+    if (!card) return
+    const wm = card.querySelector('.card-wm-dst')
+    if (!wm) return
+    wm.textContent = dstFamily
+    wm.style.fontFamily = dstFamily ? `'${dstFamily}', 'Inter', sans-serif` : ''
+    wm.style.visibility = dstFamily ? 'visible' : 'hidden'
+  }
+
   document.addEventListener('click', (e) => {
     document.querySelectorAll('.ac-drop').forEach(d => {
       if (!d.parentElement.contains(e.target)) d.classList.add('hidden')
     })
   })
 
-  // ── fallbacks ──────────────────────────────────────────────────────────────
+  // 滾動時關閉 dropdown
+  document.querySelector('.body').addEventListener('scroll', () => {
+    document.querySelectorAll('.ac-drop').forEach(d => d.classList.add('hidden'))
+  })
+
+  // ── fallbacks ──────────────────────────────────────
   function renderFallbacks() {
     const container = document.getElementById('fallbacks')
     container.innerHTML = ''
     if (unresolvedItems.length === 0) { container.classList.add('hidden'); return }
-
     unresolvedItems.forEach((item, i) => {
       const box = document.createElement('div')
       box.className = 'warn'
@@ -382,7 +758,8 @@
       ).join('')
       box.innerHTML = `
         <div class="warn-title">⚠️ 找不到對應樣式</div>
-        <div><strong>${esc(item.fromFont.family)} ${esc(item.fromFont.style)}</strong> 在 ${esc(item.toFamily)} 中沒有對應字重，請選擇替代：</div>
+        <div><strong>${esc(item.fromFont.family)} ${esc(item.fromFont.style)}</strong>
+        在 ${esc(item.toFamily)} 中沒有對應字重，請選擇替代：</div>
         <select onchange="fallbackChoices[${i}] = this.value">${opts}</select>
       `
       container.appendChild(box)
@@ -390,31 +767,40 @@
     container.classList.remove('hidden')
   }
 
-  // ── validation ─────────────────────────────────────────────────────────────
+  // ── validation ─────────────────────────────────────
   function validate() {
     const sameFont = pairs.some(p => p.fromFamily && p.toFamily && p.fromFamily === p.toFamily)
     const anyEmpty = pairs.some(p => !p.toFamily)
-    const noPairs = pairs.length === 0
+    const noPairs  = pairs.length === 0
+    const allReady = !noPairs && !sameFont && !anyEmpty
 
     document.getElementById('same-err').classList.toggle('hidden', !sameFont)
-    document.getElementById('btn-run').disabled = noPairs || sameFont || anyEmpty
+
+    const btnRun = document.getElementById('btn-run')
+    btnRun.classList.toggle('hidden', !allReady)
+    btnRun.disabled = !allReady
+
+    // 動態調整 body padding 配合 footer 高度
+    requestAnimationFrame(() => {
+      const footer = document.querySelector('.footer')
+      const body   = document.querySelector('.body')
+      if (footer && body) body.style.paddingBottom = (footer.offsetHeight + 20) + 'px'
+    })
   }
 
-  // ── replace ────────────────────────────────────────────────────────────────
+  // ── replace ────────────────────────────────────────
   function doReplace() {
     const msgPairs = pairs.map(p => ({
       from: { family: p.fromFamily, style: p.fromStyle },
-      to: { family: p.toFamily, style: '' }
+      to:   { family: p.toFamily,   style: '' }
     }))
-
     setStatus('', '')
     setRunning(true)
-
     if (unresolvedItems.length > 0) {
       const fallbacks = unresolvedItems.map((item, i) => ({
         fromFont: item.fromFont,
         toFamily: item.toFamily,
-        toStyle: fallbackChoices[i] || item.candidates[0] || 'Regular'
+        toStyle:  fallbackChoices[i] || item.candidates[0] || 'Regular'
       }))
       parent.postMessage({ pluginMessage: { type: 'applyWithFallbacks', scope, pairs: msgPairs, fallbacks } }, '*')
     } else {
@@ -422,7 +808,7 @@
     }
   }
 
-  // ── helpers ────────────────────────────────────────────────────────────────
+  // ── helpers ────────────────────────────────────────
   function setStatus(type, msg) {
     const el = document.getElementById('status')
     if (!msg) { el.classList.add('hidden'); return }
@@ -445,8 +831,27 @@
     parent.postMessage({ pluginMessage: { type: 'refresh' } }, '*')
   }
 
+  // ── preview fallback (no Figma context) ───────────
+  if (window.parent === window) {
+    usedFonts = [
+      { family: 'Inter',     style: 'Regular' },
+      { family: 'Inter',     style: 'Bold' },
+      { family: 'Helvetica', style: 'Regular' },
+    ]
+    availableFamilies = ['Noto Sans TC','Helvetica','Futura','Georgia','SF Pro Display','Roboto','Playfair Display']
+    addPair()
+    pairs.push({ id: nextId++, fromFamily: 'Helvetica', fromStyle: 'Regular', toFamily: 'Futura' })
+    pairs.push({ id: nextId++, fromFamily: 'Inter',     fromStyle: 'Regular', toFamily: '' })
+    renderPairs()
+  }
+
   function esc(s) {
-    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;')
   }
 </script>
 </body>

@@ -3,6 +3,7 @@
 *.log.*
 node_modules
 .DS_Store
+.impeccable.md
 
 out/
 dist/

@@ -11,12 +11,13 @@
 - 當目標字體缺少對應字重時，自動提示選擇替代樣式
 - 支援重新偵測，新增文字後無需重啟外掛
 
-## 介面
+## 畫面
 
 <div align="center">
-  <img src="https://github.com/JubeHuang/figmaPlugin-FontReplacer/blob/main/src/assets/FontReplacerUI.png" width="30%" />
-  <img src="https://github.com/JubeHuang/figmaPlugin-FontReplacer/blob/main/src/assets/FontReplacerUI2.png" width="30%" />
-  <img src="https://github.com/JubeHuang/figmaPlugin-FontReplacer/blob/main/src/assets/FontReplacerUI3.png" width="30%" />
+  <img src="https://github.com/JubeHuang/figmaPlugin-FontReplacer/blob/main/src/assets/1DefaultUI.png" width="30%" />
+  <img src="https://github.com/JubeHuang/figmaPlugin-FontReplacer/blob/main/src/assets/2ChooseFont.png" width="30%" />
+  <img src="https://github.com/JubeHuang/figmaPlugin-FontReplacer/blob/main/src/assets/3Add.png" width="30%" />
+  <img src="https://github.com/JubeHuang/figmaPlugin-FontReplacer/blob/main/src/assets/4ManualRefine.png" width="30%" />
 </div>
 
 ## 安裝與開發
@@ -83,7 +84,7 @@ npm run build
 
 ### 5. 重新偵測字體
 
-如果你在外掛開啟後新增了文字圖層或匯入了新元件，點擊「替換範圍」旁的 **↻ 重新偵測** 按鈕，即可重新掃描已使用的字體列表，無需關閉再重開外掛。
+如果你在外掛開啟後新增了文字圖層或匯入了新元件，點擊「替換範圍」旁的 **↻** 按鈕，即可重新掃描已使用的字體列表，無需關閉再重開外掛。
 
 ## License
 

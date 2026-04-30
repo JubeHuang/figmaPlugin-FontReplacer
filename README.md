@@ -13,13 +13,13 @@
 
 ## 畫面
 
-<div align="center">
-  <img src="https://github.com/JubeHuang/figmaPlugin-FontReplacer/blob/main/src/assets/1DefaultUI.png" width="30%" />
-  <img src="https://github.com/JubeHuang/figmaPlugin-FontReplacer/blob/main/src/assets/2ChooseFont.png" width="30%" />
-  <img src="https://github.com/JubeHuang/figmaPlugin-FontReplacer/blob/main/src/assets/3Add.png" width="30%" />
-  <img src="https://github.com/JubeHuang/figmaPlugin-FontReplacer/blob/main/src/assets/4ManualRefine.png" width="30%" />
+<div align="left">
+  <img src="https://github.com/JubeHuang/figmaPlugin-FontReplacer/blob/main/src/assets/1DefaultUI.png" width="24%" />
+  <img src="https://github.com/JubeHuang/figmaPlugin-FontReplacer/blob/main/src/assets/2ChooseFont.png" width="24%" />
+  <img src="https://github.com/JubeHuang/figmaPlugin-FontReplacer/blob/main/src/assets/3Add.png" width="24%" />
+  <img src="https://github.com/JubeHuang/figmaPlugin-FontReplacer/blob/main/src/assets/4ManualRefine.png" width="24%" />
 </div>
-
+  
 ## 安裝與開發
 
 ### 前置需求
